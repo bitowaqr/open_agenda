@@ -207,9 +207,11 @@ Outline of the thesis, explaining how the question about the relationship betwee
   - <input type="checkbox" checked> 3.2.1 An alternative social value set
   - <input type="checkbox" checked> 3.2.2 Preference heterogeneity
 - <input type="checkbox" > 3.3 The EQ-5D-5L OPUF survey Germany (public vs patient preferences)
-- <span style = "color: darkgray"><input type="checkbox" > 3.4 The EQ-5D-Y OPUF survey UK</span>
-- <span style = "color: darkgray"><input type="checkbox" > 3.5 OPUF vs PAPRIKA</span>
--  <input type="checkbox" > 3.6 The 'OPUF Platform' 
+-  <input type="checkbox" > 3.4 The 'OPUF Platform' 
+- <span style = "color: darkgray"><input type="checkbox" > 3.5 The EQ-5D-Y OPUF survey UK</span>
+- <span style = "color: darkgray"><input type="checkbox" > 3.6 The EQ-5D-5L OPUF survey South Africa</span>
+- <span style = "color: darkgray"><input type="checkbox" > 3.7 OPUF vs PAPRIKA</span>
+
 
 
 ### Part 4: Synthesis
