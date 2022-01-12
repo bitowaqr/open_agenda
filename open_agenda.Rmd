@@ -26,6 +26,9 @@ output: html_document
 .vis-item.vis-range .vis-item-content {
   display: inline;
 }
+.vis-item {
+  font-size: 14px !important;
+}
 </style>
 
 <br>
@@ -49,6 +52,8 @@ library(timevis)
 url <- 'https://docs.google.com/spreadsheets/d/1GNcpRpYV8m8R1nqxhkayimEzFyxPEXCNYt_qG7TnZoo/edit?usp=sharing'
 raw_data <- gsheet2tbl(url)
 
+
+# raw_data$subgroupOrder = 1:nrow(raw_data)
 
 ColorizeGantt = function(gantttbl = raw_data){
   proj.colors = data.frame(group = unique(gantttbl$group),
@@ -124,6 +129,7 @@ config <- list(
   orientation = "center",
   snap = NULL,
   stack = T,
+  subgroupStack = T,
   selectable	=T,
   margin = list(item = 5, axis = 20))
 
