@@ -90,10 +90,11 @@ make_check_box = function(item,deadline="", checked = F){
 myGanttTable = raw_data[!is.na(raw_data$group),] 
 myGanttTable = myGanttTable[!is.na(myGanttTable$start),]
 myGanttTable$subgroup = myGanttTable$start
-deadline = format(myGanttTable$end ,format ="%d.%m.")
+starting = format(myGanttTable$start ,format ="%d%b%y")
+deadline = format(myGanttTable$end ,format ="%d%b%y")
 myGanttTable$title = paste(
   "<b>",myGanttTable$content,"</b>",
-  "<br><b>Deadline</b>:",deadline,"<br>",
+  "<br><b>",starting," - ",deadline,"<br>",
   "<b>Status</b>:", myGanttTable$status,"<br>",
   "<b>Collaboration?</b>:", ifelse(is.na(myGanttTable$collaboration),"No",substr(myGanttTable$collaboration,1, 30))
   )
