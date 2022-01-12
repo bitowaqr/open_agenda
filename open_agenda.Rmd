@@ -1,7 +1,4 @@
 ---
-title: "open_agenda"
-author: "Paul Schneider"
-date: "30.09.2019"
 output: html_document
 ---
 <style type="text/css">
@@ -10,130 +7,115 @@ output: html_document
   margin-left: auto;
   margin-right: auto;
 }
+.text-container {
+  max-width: 120ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.text-container2 {
+  max-width: 75ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.vis-item .vis-item-overflow {
+ overflow: visible;
+ padding: 2px;
+ padding-left: 5%;
+ 
+}
+.vis-item.vis-range .vis-item-content {
+  display: inline;
+}
 </style>
 
-<br><br>
-
-#### [EDIT AGENDA](https://docs.google.com/spreadsheets/d/1fAAtlsesJY_LpE1MCnS87oDqVebkaMLG4dLLoBAfRNA/edit?usp=sharing)
-
 <br>
+
+<div class = "text-container">
+
+## __My PhD agenda 2.0__
+
+#### Paul Schneider
+
+#### Last updated: `r Sys.Date()`
+**** 
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
-# load pkg
-  # install.packages("gsheet")
-  # install.packages("RColorBrewer")
-  # install.packages("timevis")
-  library(gsheet)
-  library(RColorBrewer)
-  library(timevis)
+# Gantt
+library(gsheet)
+library(RColorBrewer)
+library(timevis)
 
-# read data from gsheet
-  url <- 'https://docs.google.com/spreadsheets/d/1fAAtlsesJY_LpE1MCnS87oDqVebkaMLG4dLLoBAfRNA/edit?usp=sharing'
-  myGanttTable <- gsheet2tbl(url)
+# url_old <- 'https://docs.google.com/spreadsheets/d/1fAAtlsesJY_LpE1MCnS87oDqVebkaMLG4dLLoBAfRNA/edit?usp=sharing'
+url <- 'https://docs.google.com/spreadsheets/d/1GNcpRpYV8m8R1nqxhkayimEzFyxPEXCNYt_qG7TnZoo/edit?usp=sharing'
+raw_data <- gsheet2tbl(url)
 
 
-# cust fun
-  ColorizeGantt = function(gantttbl = myGanttTable){
-    proj.colors = data.frame(group = unique(gantttbl$group),
-                             style = brewer.pal(length(unique(gantttbl$group)), "Set1"))
-    proj.colors = merge(gantttbl,proj.colors,by="group",sort = F)
-    proj.colors$style = paste("background:",proj.colors$style)
-    # proj.colors = paste(paste("'",proj.colors$col,"'", sep=""),sep="",collapse = ",")
-    # proj.colors = paste("[",proj.colors,"]")
-    return(proj.colors$style)
-  }
-  make_check_box = function(item,deadline="", checked = F){
-      deadline = format(deadline,format="%d %b %Y")
-    if(checked){
+ColorizeGantt = function(gantttbl = raw_data){
+  proj.colors = data.frame(group = unique(gantttbl$group),
+                           style = brewer.pal(length(unique(gantttbl$group)), "Accent"))
+  proj.colors = merge(gantttbl,proj.colors,by="group",sort = F)
+  proj.colors$style = paste("background:",proj.colors$style)
+  # proj.colors = paste(paste("'",proj.colors$col,"'", sep=""),sep="",collapse = ",")
+  # proj.colors = paste("[",proj.colors,"]")
+  return(proj.colors$style)
+}
+make_check_box = function(item,deadline="", checked = F){
+  deadline = format(deadline,format="%d %b %Y")
+  if(checked){
     cat('<tr>',
         '<td>',item,'</td>',
         '<td>',deadline,'<td>',
-      '<td><input type="checkbox" name="" value="" checked></td>',
-      '</tr>')      
+        '<td><input type="checkbox" name="" value="" checked></td>',
+        '</tr>')      
   } 
-    else {
+  else {
     cat('<tr>',
         '<td>',item,'</td>',
         '<td>',deadline,'<td>',
-      '<td><input type="checkbox" name="" value="" ></td>',
-      '</tr>')      
+        '<td><input type="checkbox" name="" value="" ></td>',
+        '</tr>')      
     # cat('<input type="checkbox" name="" value="">',item,deadline,'<br>')      
   }
-  }
-  
-  show_agenda = function(title="AGENDA",task = agenda_data$content,deadlines,status){
-  cat("<details> <summary><strong>",title,"</strong></summary><br><p>")
-    
-    cat('<table style="width:50%">
-  <tr>
-    <th align="left">Task</th> 
-    <th align="left">Deadline</th>
-    <th align="left">Status</th>
-  </tr>')
-    
-    for(i in 1:length(task)){
-      make_check_box(task[i],deadline = deadlines[i],checked = status[i])  
-    }
-
-  cat("</table></p></pre></details>")
 }
-  
-```
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE,results="asis"}
-# to do list
-agenda_data =  myGanttTable[,c("content","end","completed")]
-agenda_data = agenda_data[!is.na(agenda_data$content),]
-
-# completed?
-agenda_data$completed[is.na(agenda_data$completed)] = F
-donevar = c("yes","Yes","y","Y","x","X","done","Done")
-agenda_data$completed[agenda_data$completed %in% donevar] = T
-
-# sort
-agenda_data = agenda_data[order(agenda_data$end,decreasing = F),]
-agenda_data_comp = agenda_data[agenda_data$completed ==T,]
-agenda_data_noncomp = agenda_data[agenda_data$completed ==F,]
-
-show_agenda(title = "OPEN TASKS",
-            task = agenda_data_noncomp$content,
-            deadlines = agenda_data_noncomp$end,
-            status = agenda_data_noncomp$completed)
-cat("<br>")
-show_agenda(title = "Show all tasks",
-            task = agenda_data$content,
-            deadlines = agenda_data$end,
-            status = agenda_data$completed)
-```
 
 
-<br>
-
-****
-#### __GANTT CHART__
-
-
-```{r setup, include=FALSE}
 # create some labels etc
-myGanttTable = myGanttTable[!is.na(myGanttTable$group),] 
+myGanttTable = raw_data[!is.na(raw_data$group),] 
+myGanttTable = myGanttTable[!is.na(myGanttTable$start),]
 myGanttTable$subgroup = myGanttTable$start
 deadline = format(myGanttTable$end ,format ="%d.%m.")
-myGanttTable$title = paste(myGanttTable$content,"Deadline:",deadline)
-myGanttTable$style =  ColorizeGantt(myGanttTable)
-myGanttTable_point = myGanttTable
+myGanttTable$title = paste(
+  "<b>",myGanttTable$content,"</b>",
+  "<br><b>Deadline</b>:",deadline,"<br>",
+  "<b>Status</b>:", myGanttTable$status,"<br>",
+  "<b>Collaboration?</b>:", ifelse(is.na(myGanttTable$collaboration),"No",substr(myGanttTable$collaboration,1, 30))
+  )
+myGanttTable$style =  paste0(ColorizeGantt(myGanttTable),";","font-size:11px",sep=";")
 myGanttTable$type = "range"
-myGanttTable_point$type = "box"
-myGanttTable_point$start = myGanttTable_point$end
-myGanttTable_point$content=""
-myGanttTable_point$end = NA
-myGanttTable = rbind(myGanttTable,myGanttTable_point)
+
+
 
 # create group ID and order
+set_order = data.frame(content =  unique(myGanttTable$group),
+                       id = as.numeric(unique(as.factor(myGanttTable$group)))
+)
 myGanttTable = myGanttTable[order(myGanttTable$start,decreasing = T),]
-myGanttTable_group = data.frame(id = as.numeric(as.factor(myGanttTable$group)),content = myGanttTable$group)
-myGanttTable$group = as.numeric(as.factor(myGanttTable$group)) 
-myGanttTable_group$subgroupOrder = "content"
+
+myGanttTable_group = data.frame(
+  content = myGanttTable$group,
+  id = as.numeric(as.factor(myGanttTable$group))
+  )
 myGanttTable_group = myGanttTable_group[!duplicated(myGanttTable_group$id),]
+# myGanttTable$group = as.numeric(as.factor(myGanttTable$group))
+
+myGanttTable_group = data.frame(content = myGanttTable$group)
+myGanttTable_group = merge(myGanttTable_group,set_order,by="content")
+myGanttTable$group = myGanttTable_group$id[match(myGanttTable$group, myGanttTable_group$content)]
+myGanttTable_group = myGanttTable_group[!duplicated(myGanttTable_group$id),]
+# myGanttTable_group$id = as.numeric(myGanttTable_group$content)
+
 
 # config
 config <- list(
@@ -141,21 +123,104 @@ config <- list(
   align = "center",
   orientation = "center",
   snap = NULL,
-  stack = F,
+  stack = T,
   selectable	=T,
-  margin = list(item = 10, axis = 50))
+  margin = list(item = 5, axis = 20))
 
 # plot
-ganttplot = timevis(myGanttTable, groups = myGanttTable_group,width = "100%", options = config,fit=T)
+#ganttplot = timevis(myGanttTable, groups = myGanttTable_group,width = "100%",
+#                    options = config,fit=T)
 # htmlwidgets::saveWidget(ganttplot,file="ps_gantt.html",selfcontained = F)
 # browseURL("ps_gantt.html")
+
+tbl = myGanttTable
+tbl$type[tbl$content == "Submission (aim)"] = "point"
+tbl$type[tbl$content == "Submission deadline"] = "point"
+
+# complete?
+tbl$style[!is.na(tbl$completed)] = paste0(
+  tbl$style[!is.na(tbl$completed)],
+  "opacity: 0.75; color: black;")
+# ongoing?
+tbl$style[is.na(tbl$completed)] = paste0(
+  tbl$style[is.na(tbl$completed)],
+  "border: solid 1px black")
+# published?
+tbl$style[is.na(tbl$completed)] = paste0(
+  tbl$style[is.na(tbl$completed)],
+  "border: solid 1px black")
+
+gantt = timevis(
+  tbl, 
+  groups = myGanttTable_group,
+  width = "100%",
+  options = config,
+  fit=T
+  )
+
+# htmlwidgets::saveWidget(gantt,file="ps_gantt.html",selfcontained = F)
+  
 ```
 
 
+## Gantt chart
 
-```{r echo=FALSE}
-ganttplot
+<strong><a href="https://docs.google.com/spreadsheets/d/1GNcpRpYV8m8R1nqxhkayimEzFyxPEXCNYt_qG7TnZoo/edit?usp=sharing" target="_blank">Edit data</a></strong>
+
+</div> 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+gantt
 ```
+
+<div class = "text-container2">
+## Thesis chapter overview
+
+### Preamble
+
+Outline of the thesis, explaining how the question about the relationship between the individual and the group links the different parts of the thesis together
+
+### Part 1: Introduction
+
+  - <input type="checkbox"> 1.1 Historical context and review of health valuation methods
+  - <input type="checkbox" checked> 1.2 Normative frameworks for the valuation of health, illustration of some critical unresolved issues in the context of health valuation in childre (draft)
+
+### Part 2: Theoretical issues
+
+- <input type="checkbox" checked> 2.1 Democratic tariff (published in HE)
+- <input type="checkbox" checked> 2.2 Relative utilitarian preference aggregation
+    - <input type="checkbox" checked> 2.2.1 Utility rescaling (UNPAc) (done, revise+resubmit MDM)
+    - <input type="checkbox" checked> 2.2.2 Utility rescaling collaboration (report)
+    - <input type="checkbox" checked> 2.2.3  Dead != 0. (revise+resubmit MDM)
+- <input type="checkbox" checked> 2.3 The QALY is ableist (published in QoLR)
+
+### Part 3: OPUF | Methodological development
+
+- <input type="checkbox" checked> 3.1 The EQ-5D-5L OPUF Tool - Framework, tool development, and pilot
+- <input type="checkbox" checked> 3.2 The EQ-5D-5L OPUF survey UK
+  - <input type="checkbox" checked> 3.2.1 An alternative social value set
+  - <input type="checkbox" checked> 3.2.2 Preference heterogeneity
+- <input type="checkbox" > 3.3 The EQ-5D-5L OPUF survey Germany (public vs patient preferences)
+- <span style = "color: darkgray"><input type="checkbox" > 3.4 The EQ-5D-Y OPUF survey UK</span>
+- <span style = "color: darkgray"><input type="checkbox" > 3.5 OPUF vs PAPRIKA</span>
+-  <input type="checkbox" > 3.6 The 'OPUF Platform' 
+
+
+### Part 4: Synthesis
+
+  - <input type="checkbox" > <mark>4.1 Simulation studies (?)</mark>
+
+
+</div> 
+
+<br><br>
+
+****
+&copy; Paul Schneider, 2022
+<br><br><br>
+
+
+
 
 
 
